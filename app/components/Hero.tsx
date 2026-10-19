@@ -20,18 +20,19 @@ const HERO_TRUST = [
   { label: "HOT TOWEL", render: () => <Glyph name="towel" className="h-4 w-4" />, mobile: false },
 ];
 
-/** Neon that keeps its letterforms: tight bright core, graduated halo. */
+/** Crisp neon. A single tight 10px halo plus a hard 2px black offset keeps
+    the edges sharp at 84px; the wide 38/70px bloom this replaced read as
+    blur on a large display. Same values at every size, so the style no
+    longer depends on JS state and renders identically during SSR. */
 const NEON: CSSProperties = {
-  textShadow:
-    "0 0 6px rgba(190,255,120,.95), 0 0 16px rgba(126,211,33,.8), 0 0 38px rgba(126,211,33,.45), 0 0 70px rgba(126,211,33,.25)",
+  WebkitTextStroke: "1px rgba(126,211,33,0.3)",
+  textShadow: "0 0 10px rgba(126,211,33,0.8), 0 2px 0 rgba(0,0,0,0.8)",
+  filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.9))",
 };
 
-/** Same glow, plus a dark edge and drop shadow so it lifts off the footage
-    at small sizes where the halo would otherwise swallow the letters. */
-const NEON_MOBILE: CSSProperties = {
-  textShadow:
-    "0 2px 10px rgba(0,0,0,.8), 0 0 6px rgba(190,255,120,.9), 0 0 18px rgba(126,211,33,.6)",
-  WebkitTextStroke: "1px #0a0a0a",
+/** The white lines carry no glow — they just need to sit off the footage. */
+const PAPER: CSSProperties = {
+  textShadow: "0 2px 12px rgba(0,0,0,0.9), 0 4px 20px rgba(0,0,0,0.8)",
 };
 
 export function Hero({ onBook }: { onBook: (serviceId?: string) => void }) {
@@ -152,15 +153,17 @@ export function Hero({ onBook }: { onBook: (serviceId?: string) => void }) {
               </span>
             </div>
 
-            <h1 className="font-display text-[42px] uppercase leading-[0.9] tracking-tight sm:text-6xl sm:leading-[0.86] lg:text-7xl xl:text-[78px]">
-              <span className="block text-neon" style={isDesktop ? NEON : NEON_MOBILE}>
+            <h1 className="font-display text-[42px] uppercase leading-[0.85] tracking-[-0.02em] sm:text-[56px] md:text-[68px] lg:text-[78px] xl:text-[84px]">
+              <span className="block text-neon" style={NEON}>
                 PREMIUM
               </span>
-              <span className="block text-white md:mix-blend-difference">CUTS.</span>
-              <span className="block text-neon" style={isDesktop ? NEON : NEON_MOBILE}>
+              <span className="block text-white" style={PAPER}>
+                CUTS.
+              </span>
+              <span className="block text-neon" style={NEON}>
                 PREMIUM
               </span>
-              <span className="block text-white md:mix-blend-difference">
+              <span className="block text-white" style={PAPER}>
                 EXPERIENCE.
               </span>
             </h1>
