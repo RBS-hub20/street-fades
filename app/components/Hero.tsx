@@ -40,10 +40,7 @@ export function Hero({ onBook }: { onBook: (serviceId?: string) => void }) {
   /* Starts "false" so SSR and the first client render agree. */
   const [isDesktop, setIsDesktop] = useState(false);
   const [calm, setCalm] = useState(false);
-  /* Phones get a poster until the visitor asks for the video — no autoplay
-     download on mobile data. */
-  const [playMobile, setPlayMobile] = useState(false);
-  const mobileVideoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const wide = window.matchMedia("(min-width: 768px)");
@@ -61,8 +58,35 @@ export function Hero({ onBook }: { onBook: (serviceId?: string) => void }) {
     };
   }, []);
 
-  const showDesktopVideo = isDesktop && !calm;
-  const showMobileVideo = !isDesktop && !calm && playMobile;
+  /* Phones get the portrait cut, desktop the landscape one. A single file
+     with object-position can't do this: cropping 16:9 into a tall frame only
+     ever shows a narrow vertical slice of the room. */
+  const videoSrc = calm
+    ? null
+    : isDesktop
+      ? "/videos/hero-interior.mp4"
+      : "/videos/hero-interior-mobile.mp4";
+  const posterSrc = isDesktop
+    ? "/images/hero-poster.jpg"
+    : "/images/hero-poster-mobile.jpg";
+
+  /* autoPlay + muted + playsInline covers iOS and Android, but Low Power
+     Mode and some in-app browsers still refuse. Retry on load, then fall
+     back to the first tap anywhere on the page. */
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    const tryPlay = () => void video.play().catch(() => {});
+    tryPlay();
+    video.addEventListener("loadeddata", tryPlay);
+    document.addEventListener("touchstart", tryPlay, { once: true, passive: true });
+    document.addEventListener("click", tryPlay, { once: true });
+    return () => {
+      video.removeEventListener("loadeddata", tryPlay);
+      document.removeEventListener("touchstart", tryPlay);
+      document.removeEventListener("click", tryPlay);
+    };
+  }, [videoSrc]);
 
   return (
     <section
@@ -70,48 +94,36 @@ export function Hero({ onBook }: { onBook: (serviceId?: string) => void }) {
       className="stone relative isolate flex min-h-[86vh] flex-col justify-center overflow-hidden pt-[64px] md:min-h-screen"
     >
       {/* ══ The studio itself ══════════════════════════════════════ */}
-      <div className="absolute inset-0 -z-10">
-        {showDesktopVideo ? (
+      {/* Fallback colour so a blocked video never shows black */}
+      <div className="absolute inset-0 -z-10 bg-[#0a0a0a]">
+        {videoSrc ? (
           <video
-            className="animate-kenBurns h-full w-full object-cover"
-            style={{ filter: "brightness(1.1) contrast(1.2) saturate(1.05)" }}
-            poster="/images/hero-poster.jpg"
-            src="/videos/hero-interior.mp4"
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-hidden="true"
-          />
-        ) : showMobileVideo ? (
-          <video
-            ref={mobileVideoRef}
-            className="h-full w-full object-cover"
-            style={{ filter: "brightness(1.2) contrast(1.15) saturate(1.05)" }}
-            poster="/images/hero-poster-mobile.jpg"
-            src="/videos/hero-interior-mobile.mp4"
+            key={videoSrc}
+            ref={videoRef}
+            className="h-full w-full object-cover brightness-[1.15] contrast-[1.1] md:animate-kenBurns"
+            poster={posterSrc}
+            src={videoSrc}
             autoPlay
             muted
             loop
             playsInline
             preload="auto"
+            disablePictureInPicture
             aria-hidden="true"
           />
         ) : (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img
-            src={isDesktop ? "/images/hero-poster.jpg" : "/images/hero-poster-mobile.jpg"}
+            src={posterSrc}
             alt="Inside Street Fades Hair Studio — chairs with camo capes, mirrors, neon signs"
-            className="h-full w-full object-cover"
-            style={{ filter: isDesktop ? undefined : "brightness(1.2)" }}
+            className="h-full w-full object-cover brightness-[1.15]"
           />
         )}
 
-        <div className="absolute inset-0 bg-ink/25 md:bg-ink/40" />
+        <div className="absolute inset-0 bg-ink/20 md:bg-ink/35" />
         {/* Mobile reads top-to-bottom, desktop left-to-right */}
-        <div className="absolute inset-0 bg-gradient-to-b from-ink/85 via-ink/30 to-ink/80 md:hidden" />
-        <div className="absolute inset-0 hidden bg-gradient-to-r from-ink/90 via-ink/20 to-transparent md:block" />
+        <div className="absolute inset-0 bg-gradient-to-b from-ink/80 via-ink/25 to-ink/75 md:hidden" />
+        <div className="absolute inset-0 hidden bg-gradient-to-r from-ink/90 via-ink/30 to-ink/10 md:block" />
         <div className="absolute inset-y-0 left-0 hidden w-full max-w-3xl bg-gradient-to-r from-ink via-ink/65 to-transparent md:block" />
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ink to-transparent" />
         <div
@@ -126,23 +138,6 @@ export function Hero({ onBook }: { onBook: (serviceId?: string) => void }) {
         <div className="absolute -right-24 bottom-10 h-[360px] w-[360px] rounded-full bg-neon/10 blur-[120px]" />
         <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon/60 to-transparent" />
       </div>
-
-      {/* Tap to play — mobile only, and only while the poster is showing */}
-      {!isDesktop && !calm && !playMobile && (
-        <button
-          type="button"
-          onClick={() => setPlayMobile(true)}
-          aria-label="Play the studio tour"
-          className="group absolute right-5 top-[84px] z-10 flex items-center gap-2 rounded-full border border-neon/50 bg-ink/70 py-2 pl-2 pr-3.5 backdrop-blur-md"
-        >
-          <span className="grid h-7 w-7 place-items-center rounded-full bg-neon text-[10px] text-ink">
-            ▶
-          </span>
-          <span className="font-head text-[10px] tracking-[.18em] text-neon">
-            PLAY TOUR
-          </span>
-        </button>
-      )}
 
       <div className="mx-auto w-full max-w-7xl px-5 py-10 sm:px-6 sm:py-14 lg:px-8">
         <div className="grid items-center gap-9 lg:grid-cols-[1.1fr_.9fr] lg:gap-14">
@@ -216,7 +211,7 @@ export function Hero({ onBook }: { onBook: (serviceId?: string) => void }) {
             <div className="relative overflow-hidden rounded-2xl border border-neon/30 bg-ink/70 p-5 shadow-[0_0_0_1px_rgba(126,211,33,.08),0_24px_70px_-20px_rgba(126,211,33,.35)] backdrop-blur-xl sm:p-6 md:bg-ink/60 md:backdrop-blur-2xl">
               <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-neon to-transparent" />
 
-              {showDesktopVideo && (
+              {isDesktop && !calm && (
                 <div className="relative mb-5 overflow-hidden rounded-xl border border-neon/25">
                   <video
                     className="h-20 w-full object-cover"
