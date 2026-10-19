@@ -36,6 +36,10 @@ const config: Config = {
           "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
         },
         fadeIn: { "0%": { opacity: "0" }, "100%": { opacity: "1" } },
+        kenBurns: {
+          "0%": { transform: "scale(1)" },
+          "100%": { transform: "scale(1.15)" },
+        },
         pulseLine: {
           "0%,100%": { opacity: ".35" },
           "50%": { opacity: "1" },
@@ -47,6 +51,7 @@ const config: Config = {
         popIn: "popIn .32s cubic-bezier(.22,1,.36,1) both",
         fadeIn: "fadeIn .25s ease-out both",
         pulseLine: "pulseLine 2.6s ease-in-out infinite",
+        kenBurns: "kenBurns 20s ease-in-out infinite alternate",
       },
     },
   },
