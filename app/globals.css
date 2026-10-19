@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #050505;
+  --card: #121212;
+  --cardhi: #1a1a1a;
+  --line: #232323;
+  --muted: #8a8a8a;
+  --neon: #7ed321;
+  --blood: #e11d48;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 72px;
+}
+
+body {
+  background-color: var(--ink);
+  color: #fff;
+  font-family: Inter, Sora, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--neon);
+  color: #050505;
+}
+
+/* ── Black stone / grain texture ───────────────────────────── */
+.stone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+}
+
+/* ── Subtle camo blotch overlay ────────────────────────────── */
+.camo {
+  background-image:
+    radial-gradient(ellipse 72px 44px at 12% 18%, rgba(126, 211, 33, 0.14) 0 62%, transparent 63%),
+    radial-gradient(ellipse 54px 62px at 34% 46%, rgba(60, 82, 28, 0.5) 0 60%, transparent 61%),
+    radial-gradient(ellipse 88px 40px at 68% 22%, rgba(126, 211, 33, 0.09) 0 60%, transparent 61%),
+    radial-gradient(ellipse 46px 52px at 86% 58%, rgba(40, 56, 20, 0.6) 0 60%, transparent 61%),
+    radial-gradient(ellipse 64px 36px at 52% 78%, rgba(126, 211, 33, 0.11) 0 60%, transparent 61%),
+    radial-gradient(ellipse 40px 44px at 18% 86%, rgba(50, 68, 24, 0.5) 0 60%, transparent 61%),
+    radial-gradient(ellipse 58px 30px at 90% 90%, rgba(126, 211, 33, 0.07) 0 60%, transparent 61%);
+  background-size: 320px 320px;
+  background-repeat: repeat;
+}
+
+.camo-solid {
+  background-color: #1c2412;
+  background-image:
+    radial-gradient(ellipse 60px 40px at 14% 20%, #4a6b22 0 62%, transparent 63%),
+    radial-gradient(ellipse 48px 56px at 38% 52%, #2b3a16 0 60%, transparent 61%),
+    radial-gradient(ellipse 72px 36px at 70% 26%, #6f9a33 0 60%, transparent 61%),
+    radial-gradient(ellipse 42px 48px at 88% 64%, #26330f 0 60%, transparent 61%),
+    radial-gradient(ellipse 56px 32px at 50% 84%, #4a6b22 0 60%, transparent 61%);
+  background-size: 110px 110px;
+}
+
+/* ── Neon brush-stroke badge ───────────────────────────────── */
+.brush {
+  clip-path: polygon(
+    2% 14%, 9% 2%, 23% 9%, 41% 0%, 59% 8%, 77% 1%, 93% 10%, 100% 22%,
+    97% 58%, 100% 87%, 88% 98%, 70% 91%, 52% 100%, 33% 92%, 14% 99%, 3% 87%, 0% 50%
+  );
+  transform: skewX(-7deg);
+}
+
+.brush-inner {
+  transform: skewX(7deg);
+}
+
+/* ── Misc ──────────────────────────────────────────────────── */
+.text-stroke {
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.22);
+  color: transparent;
+}
+
+.hide-scroll::-webkit-scrollbar {
+  display: none;
+}
+.hide-scroll {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-scroll::-webkit-scrollbar-track {
+  background: #0c0c0c;
+}
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: #2c2c2c;
+  border-radius: 99px;
+}
+.modal-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--neon);
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  filter: invert(1) sepia(1) saturate(5) hue-rotate(50deg);
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
