@@ -46,7 +46,7 @@ export function Header({ onBook }: { onBook: () => void }) {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <div className="mr-1 hidden items-center gap-1 sm:flex">
             {[
               { label: "Facebook", href: BRAND.facebook, Icon: IconFacebook },
@@ -68,7 +68,7 @@ export function Header({ onBook }: { onBook: () => void }) {
           <button
             type="button"
             onClick={onBook}
-            className="rounded-lg bg-blood px-4 py-2.5 font-head text-[11px] tracking-[.16em] text-white transition-all hover:scale-[1.03] hover:shadow-blood active:scale-100 sm:px-5 sm:text-xs"
+            className="rounded-lg bg-blood px-3 py-2 font-head text-[10px] tracking-[.14em] text-white transition-all hover:scale-[1.03] hover:shadow-blood active:scale-100 sm:px-5 sm:py-2.5 sm:text-xs"
           >
             BOOK NOW
           </button>
@@ -77,7 +77,7 @@ export function Header({ onBook }: { onBook: () => void }) {
             onClick={() => setMenu((v) => !v)}
             aria-label="Toggle menu"
             aria-expanded={menu}
-            className="grid h-10 w-10 place-items-center rounded-lg border border-line text-white lg:hidden"
+            className="grid h-10 w-10 place-items-center rounded-lg border border-neon/40 bg-card/70 text-neon transition-colors hover:border-neon lg:hidden"
           >
             <span className="relative block h-3.5 w-4">
               <span className={`absolute left-0 h-[2px] w-full bg-current transition-all ${menu ? "top-1.5 rotate-45" : "top-0"}`} />

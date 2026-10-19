@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
 import Header from "./Header";
@@ -30,6 +30,21 @@ export default function ClientPage() {
     setModal((m) => ({ open: true, serviceId, key: m.key + 1 }));
   }, []);
 
+  /* The hero already has a big red CTA; showing the sticky bar at the same
+     time puts two identical buttons on screen. Reveal it only once the hero
+     has scrolled away. */
+  const [pastHero, setPastHero] = useState(false);
+  useEffect(() => {
+    const hero = document.getElementById("home");
+    if (!hero) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setPastHero(!entry.isIntersecting),
+      { threshold: 0 },
+    );
+    io.observe(hero);
+    return () => io.disconnect();
+  }, []);
+
   const closeBooking = useCallback(() => {
     setModal((m) => ({ ...m, open: false }));
   }, []);
@@ -54,7 +69,12 @@ export default function ClientPage() {
       <Footer onBook={() => openBooking()} />
 
       {/* Mobile sticky CTA */}
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink/95 px-4 py-3 backdrop-blur-xl sm:hidden">
+      <div
+        className={`fixed inset-x-0 bottom-0 z-40 border-t border-line bg-ink/95 px-5 py-3 backdrop-blur-xl transition-transform duration-300 sm:hidden ${
+          pastHero ? "translate-y-0" : "translate-y-full"
+        }`}
+        aria-hidden={!pastHero}
+      >
         <button
           type="button"
           onClick={() => openBooking()}
